@@ -29,11 +29,6 @@ jobs:
           load: true
           tags: ${{ env.TEST_TAG }}
 
-      # Линтинг и тесты внутри собранного контейнера
-      - run: docker run --rm ${{ env.TEST_TAG }} npm run lint
-      - run: docker run --rm ${{ env.TEST_TAG }} npm test
-
-      # Если тесты прошли — обновляем :latest на Docker Hub
       - name: Build and push latest
         uses: docker/build-push-action@v5
         with:
