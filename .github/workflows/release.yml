@@ -1,0 +1,27 @@
+name: release
+
+on:
+  create:
+    tags:
+      - v*
+
+env:
+  IMAGE_NAME: aleksved/js-fastify-blog
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      # Скачиваем свежий протестированный latest
+      - run: docker pull ${{ env.IMAGE_NAME }}:latest
+      
+      # Тегируем его версией из Git-тега
+      - run: docker tag ${{ env.IMAGE_NAME }}:latest ${{ env.IMAGE_NAME }}:${{ github.ref_name }}
+
+      # Пушим версионированный образ
+      - run: docker push ${{ env.IMAGE_NAME }}:${{ github.ref_name }}
